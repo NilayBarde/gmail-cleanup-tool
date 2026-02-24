@@ -26,8 +26,13 @@ export const fetchAnalysis = async (limit = 200) => {
     return response.data;
 };
 
-export const fetchEmailIds = async (limit = 500) => {
-    const response = await axios.get(`${API_URL}/emails/ids?limit=${limit}`);
+// Fetch just IDs (fast)
+export const fetchEmailIds = async (limit = 500, query = "") => {
+    let url = `${API_URL}/emails/ids?limit=${limit}`;
+    if (query) {
+        url += `&q=${encodeURIComponent(query)}`;
+    }
+    const response = await axios.get(url);
     return response.data; // { ids: [...], count: ... }
 };
 

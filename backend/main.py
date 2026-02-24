@@ -53,9 +53,9 @@ def analyze_emails(limit: int = 200):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/emails/ids")
-def get_email_ids(limit: int = 500):
+def get_email_ids(limit: int = 500, q: str = None):
     try:
-        ids = gmail_service.fetch_message_ids(limit=limit)
+        ids = gmail_service.fetch_message_ids(limit=limit, q=q)
         return {"ids": ids, "count": len(ids)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

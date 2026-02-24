@@ -20,7 +20,7 @@ A powerful, local-first web application to visualize your inbox, identify top se
 ## Prerequisites
 
 -   **Node.js** (v18+)
--   **Python** (v3.9+)
+-   **Python** (v3.10+; v3.11+ recommended to avoid warnings)
 -   **Google Cloud Project**: You need to create a project and enable the Gmail API.
 
 ## Setup Guide

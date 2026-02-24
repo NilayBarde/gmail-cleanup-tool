@@ -66,7 +66,7 @@ function App() {
     return { total_emails: emails.length, senders: sorted };
   };
 
-  const loadDashboardData = async (limit = 1000) => {
+  const loadDashboardData = async (limit = 1000, query = "") => {
     // If not loading and not data, or if force reload? 
     // Actually we want to allow reload.
 
@@ -76,7 +76,7 @@ function App() {
       stopFetchingRef.current = false;
 
       // 1. Fetch IDs
-      const { ids } = await fetchEmailIds(limit); // Fetch limited IDs
+      const { ids } = await fetchEmailIds(limit, query); // Fetch limited IDs with optional query
 
       if (stopFetchingRef.current) {
         setLoading(false);

@@ -15,10 +15,20 @@ const Dashboard = ({
 }) => {
     const [fetchLimit, setFetchLimit] = useState(1000);
     const [fetchAll, setFetchAll] = useState(false);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const handleStartAnalysis = () => {
         const limit = fetchAll ? 0 : fetchLimit;
-        onLoadData(limit);
+
+        // Construct query
+        let queryParts = [];
+        if (startDate) queryParts.push(`after:${startDate.replace(/-/g, '/')}`);
+        if (endDate) queryParts.push(`before:${endDate.replace(/-/g, '/')}`);
+
+        const query = queryParts.join(' ');
+
+        onLoadData(limit, query);
     };
 
     if (loading && (!data || data.total_emails === 0)) {
@@ -80,6 +90,27 @@ const Dashboard = ({
                             />
                             <label htmlFor="fetchAll" className="text-sm text-gray-600 select-none">Fetch All</label>
                         </div>
+
+                        <div className="h-6 w-px bg-gray-300 mx-2"></div>
+
+                        <div className="flex items-center space-x-2">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="px-2 py-1 border rounded text-sm text-gray-600"
+                                title="After this date"
+                            />
+                            <span className="text-gray-400">-</span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="px-2 py-1 border rounded text-sm text-gray-600"
+                                title="Before this date"
+                            />
+                        </div>
+
                         <button
                             onClick={handleStartAnalysis}
                             className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"

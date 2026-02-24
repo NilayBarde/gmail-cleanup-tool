@@ -10,7 +10,7 @@ def get_gmail_service():
     creds = auth.get_credentials()
     return build('gmail', 'v1', credentials=creds)
 
-def fetch_message_ids(limit=500):
+def fetch_message_ids(limit=500, q=None):
     """Fetches just the IDs of recent emails, handling pagination for >500."""
     service = get_gmail_service()
     try:
@@ -29,6 +29,9 @@ def fetch_message_ids(limit=500):
                 'userId': 'me', 
                 'maxResults': fetch_size
             }
+            if q:
+                kwargs['q'] = q
+            
             if next_page_token:
                 kwargs['pageToken'] = next_page_token
             
@@ -53,7 +56,7 @@ def fetch_email_details_by_ids(message_ids):
         return []
 
     email_data = []
-    chunk_size = 20
+    chunk_size = 40
     fetched_messages = {}
     
     import random
@@ -118,8 +121,13 @@ def fetch_email_details_by_ids(message_ids):
         execute_batch(chunk)
         
         # Small courtesy sleep between main chunks to be nice to the API
+        # Rate Limit Math: 
+        # - Batch size: 40
+        # - Cost per batch: 40 * 5 units = 200 units
+        # - Sleep: 1.0s -> ~1 batch/sec (inc. network time) -> ~50-60 batches/min
+        # - Total Cost: ~10,000-12,000 units/min (vs Limit of 15,000)
         if len(message_ids) > chunk_size:
-             time.sleep(0.5)
+             time.sleep(1.0)
 
     # Process into clean objects (same as before)
     for msg_id in message_ids:
